@@ -1,4 +1,4 @@
-# Async Http
+# Async HTTP
 
 Provides a HTTP/1.x client and server implementation.
 
@@ -24,7 +24,7 @@ To fetch project dependencies, run the following:
 The project can be checked by running unit tests:
 
 	$ cd async-http
-	$ teapot Test/AsyncHttp
+	$ teapot Test/AsyncHTTP
 
 ## Usage
 

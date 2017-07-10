@@ -32,7 +32,6 @@ define_target 'async-http-library' do |target|
 		convert source_file: source_root + 'Async/HTTP/ResponseParser.rl', destination_path: cache_prefix + 'Async/HTTP/ResponseParser.cpp'
 		
 		build static_library: "AsyncHTTP", source_files: (source_root.glob('Async/**/*.cpp') + cache_prefix.glob('Async/**/*.cpp'))
-		build static_library: 'AsyncHttp', source_files: source_root.glob('AsyncHttp/**/*.cpp')
 	end
 	
 	target.depends 'Build/Files'
