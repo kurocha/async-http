@@ -83,6 +83,10 @@ namespace Async
 				}
 			}
 			
+			action http_complete {
+				_complete = true;
+			}
+			
 			include HTTP1 "HTTP1.rl";
 			
 			main := http_request;
@@ -104,6 +108,7 @@ namespace Async
 		}
 		
 		const Byte * RequestParser::parse(const Byte * p, const Byte * pe) {
+			const Byte * eof = pe;
 			const Byte * mark = _marked ? p : nullptr;
 			
 			%%{

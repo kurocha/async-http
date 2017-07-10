@@ -36,12 +36,12 @@
 	http_response = http_status_line (http_header)* http_crlf @http_body;
 	
 	# Reads a fixed number of bytes of content.
-	http_content_body := any >http_read_content;
+	http_content_body := any >http_read_content %http_complete;
 	
 	# Reads a chunked transfer encoding body.
 	http_chunked_body :=
 		(
 			([0-9a-fA-F]+) >mark http_crlf %http_chunk_size
 			any >http_read_content http_crlf
-		)+;
+		)+ %http_complete;
 }%%

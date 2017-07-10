@@ -26,6 +26,8 @@ namespace Async
 					RequestParser request_parser(request);
 					request_parser.parse(buffer.begin(), buffer.end());
 					
+					examiner.expect(request_parser.complete()) == false;
+					
 					examiner.expect(request.method) == "GET";
 					examiner.expect(request.target) == "/foobar";
 					examiner.expect(request.version) == "HTTP/1.1";
@@ -43,6 +45,8 @@ namespace Async
 						request_parser.parse(current, current+1);
 					}
 					
+					examiner.expect(request_parser.complete()) == false;
+					
 					examiner.expect(request.method) == "GET";
 					examiner.expect(request.target) == "/foobar";
 					examiner.expect(request.version) == "HTTP/1.1";
@@ -56,6 +60,7 @@ namespace Async
 					Request request;
 					RequestParser request_parser(request);
 					request_parser.parse(buffer.begin(), buffer.end());
+					examiner.expect(request_parser.complete()) == true;
 					
 					examiner.expect(request.method) == "POST";
 					examiner.expect(request.target) == "/foobar";
@@ -72,6 +77,7 @@ namespace Async
 					Request request;
 					RequestParser request_parser(request);
 					request_parser.parse(buffer.begin(), buffer.end());
+					examiner.expect(request_parser.complete()) == true;
 					
 					examiner.expect(request.method) == "POST";
 					examiner.expect(request.target) == "/foobar";
@@ -89,6 +95,7 @@ namespace Async
 					Request request;
 					RequestParser request_parser(request);
 					request_parser.parse(buffer.begin(), buffer.end());
+					examiner.expect(request_parser.complete()) == true;
 					
 					examiner.expect(request.method) == "POST";
 					examiner.expect(request.target) == "/foobar";
