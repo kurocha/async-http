@@ -108,7 +108,7 @@ namespace Async
 		}
 		
 		const Byte * RequestParser::parse(const Byte * p, const Byte * pe) {
-			const Byte * eof = pe;
+			const Byte * eof = nullptr;
 			const Byte * mark = _marked ? p : nullptr;
 			
 			%%{
