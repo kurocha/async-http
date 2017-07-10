@@ -5,19 +5,23 @@
 
 teapot_version "1.0"
 
+# Project Metadata
+
 define_project "async-http" do |project|
 	project.title = "Async HTTP"
 	
+	project.summary = 'A brief one line summary of the project.'
+	
 	project.license = "MIT License"
-
+	
 	project.add_author 'Samuel Williams', email: 'samuel.williams@oriontransfer.co.nz'
-
+	
 	project.version = "1.0.0"
 end
 
 # Build Targets
 
-define_target "async-http" do |target|
+define_target 'async-http-library' do |target|
 	target.build do
 		source_root = target.package.path + 'source'
 		cache_prefix = Path.join(environment[:build_prefix], "async-http-#{environment.checksum}")
@@ -28,7 +32,11 @@ define_target "async-http" do |target|
 		convert source_file: source_root + 'Async/HTTP/ResponseParser.rl', destination_path: cache_prefix + 'Async/HTTP/ResponseParser.cpp'
 		
 		build static_library: "AsyncHTTP", source_files: (source_root.glob('Async/**/*.cpp') + cache_prefix.glob('Async/**/*.cpp'))
+		build static_library: 'AsyncHttp', source_files: source_root.glob('AsyncHttp/**/*.cpp')
 	end
+	
+	target.depends 'Build/Files'
+	target.depends 'Build/Clang'
 	
 	target.depends :platform
 	target.depends "Language/C++14", private: true
@@ -44,7 +52,9 @@ define_target "async-http" do |target|
 	target.depends "Library/AsyncNetwork"
 	
 	target.provides "Library/AsyncHTTP" do
-		append linkflags {install_prefix + "lib/libAsyncHTTP.a"}
+		append linkflags [
+			->{install_prefix + 'lib/libAsyncHTTP.a'},
+		]
 	end
 end
 
@@ -69,9 +79,6 @@ end
 define_configuration "async-http" do |configuration|
 	configuration[:source] = "https://github.com/kurocha"
 	
-	configuration.require "platforms"
-	configuration.require "build-files"
-	
 	configuration.require "memory"
 	configuration.require "time"
 	configuration.require "concurrent"
@@ -81,10 +88,19 @@ define_configuration "async-http" do |configuration|
 	configuration.require "async-network"
 	
 	configuration.require "buffers"
-	configuration.require "unit-test"
+	
 	configuration.require "ragel"
+	
+	# Provides all the build related infrastructure:
+	configuration.require "platforms"
+	configuration.require "build-files"
+	
+	# Provides unit testing infrastructure and generators:
+	configuration.require "unit-test"
+	
+	# Provides some useful C++ generators:
+	configuration.require "generate-cpp-class"
 	
 	configuration.require 'generate-project'
 	configuration.require 'generate-travis'
-	configuration.require "generate-cpp-class"
 end
