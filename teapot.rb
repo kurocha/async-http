@@ -28,10 +28,14 @@ define_target 'async-http-library' do |target|
 		
 		copy headers: source_root.glob('Async/**/*.hpp')
 		
-		convert source_file: source_root + 'Async/HTTP/RequestParser.rl', destination_path: cache_prefix + 'Async/HTTP/RequestParser.cpp'
-		convert source_file: source_root + 'Async/HTTP/ResponseParser.rl', destination_path: cache_prefix + 'Async/HTTP/ResponseParser.cpp'
+		parsers = source_root.glob('Async/HTTP/*Parser.rl')
 		
-		build static_library: "AsyncHTTP", source_files: (source_root.glob('Async/**/*.cpp') + cache_prefix.glob('Async/**/*.cpp'))
+		implementation_files = parsers.collect do |file|
+			implementation_file = cache_prefix + (file.relative_path + '.cpp')
+			convert source_file: file, destination_path: implementation_file
+		end
+		
+		build static_library: "AsyncHTTP", source_files: source_root.glob('Async/**/*.cpp') + implementation_files
 	end
 	
 	target.depends 'Build/Files'
