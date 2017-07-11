@@ -10,7 +10,7 @@
 
 #include <Logger/Console.hpp>
 
-#include "Protocol/HTTP1.hpp"
+#include "V1/Protocol.hpp"
 
 namespace Async
 {
@@ -46,7 +46,7 @@ namespace Async
 						while (true) {
 							connections.resume([&, client = socket.accept(reactor)]() mutable {
 								Console::info("Client", client, "connected from", client.remote_address());
-								Protocol::HTTP1 protocol(client, reactor);
+								V1::Protocol protocol(client, reactor);
 								
 								Request request;
 								while (protocol.read_request(request)) {

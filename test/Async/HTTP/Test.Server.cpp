@@ -15,7 +15,7 @@
 #include <Async/Protocol.hpp>
 
 #include <Async/HTTP/Server.hpp>
-#include <Async/HTTP/Protocol/HTTP1.hpp>
+#include <Async/HTTP/V1/Protocol.hpp>
 
 namespace Async
 {
@@ -47,7 +47,7 @@ namespace Async
 						for (auto & endpoint : endpoints) {
 							auto socket = endpoint.connect(reactor);
 							
-							Protocol::HTTP1 protocol(socket, reactor);
+							V1::Protocol protocol(socket, reactor);
 							
 							protocol.write_request(request);
 							

@@ -3,8 +3,7 @@
 	# An HTTP request grammar. Can parse both http_request and http_response.
 	# Based on https://tools.ietf.org/html/rfc7230
 	
-	machine HTTP1;
-	
+	machine RFC7230;
 	alphtype unsigned char;
 	
 	# Visible, printable characters.

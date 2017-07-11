@@ -1,14 +1,12 @@
 //
-//  HTTP1.hpp
+//  Protocol.hpp
 //  File file is part of the "Async Http" project and released under the MIT License.
 //
-//  Created by Samuel Williams on 10/7/2017.
+//  Created by Samuel Williams on 11/7/2017.
 //  Copyright, 2017, by Samuel Williams. All rights reserved.
 //
 
 #pragma once
-
-#include <Buffers/DynamicBuffer.hpp>
 
 #include <Async/Protocol.hpp>
 #include <Async/Network/Socket.hpp>
@@ -16,19 +14,19 @@
 #include "../Request.hpp"
 #include "../Response.hpp"
 
-#include <string>
+#include <Buffers/DynamicBuffer.hpp>
 
 namespace Async
 {
 	namespace HTTP
 	{
-		namespace Protocol
+		namespace V1
 		{
-			class HTTP1 : protected StreamProtocol
+			class Protocol : protected Async::StreamProtocol
 			{
 			public:
-				HTTP1(Network::Socket & socket, Reactor & reactor);
-				virtual ~HTTP1();
+				Protocol(Network::Socket & socket, Reactor & reactor);
+				virtual ~Protocol();
 				
 				bool read_request(Request & request);
 				bool read_response(Response & response);

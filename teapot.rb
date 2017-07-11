@@ -28,7 +28,7 @@ define_target 'async-http-library' do |target|
 		
 		copy headers: source_root.glob('Async/**/*.hpp')
 		
-		parsers = source_root.glob('Async/HTTP/*Parser.rl')
+		parsers = source_root.glob('Async/HTTP/**/*Parser.rl')
 		
 		implementation_files = parsers.collect do |file|
 			implementation_file = cache_prefix + (file.relative_path + '.cpp')

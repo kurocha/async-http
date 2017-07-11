@@ -1,19 +1,15 @@
 //
-//  HTTP1.cpp
+//  Protocol.cpp
 //  File file is part of the "Async Http" project and released under the MIT License.
 //
-//  Created by Samuel Williams on 10/7/2017.
+//  Created by Samuel Williams on 11/7/2017.
 //  Copyright, 2017, by Samuel Williams. All rights reserved.
 //
 
-#include "HTTP1.hpp"
+#include "Protocol.hpp"
 
-#include "../RequestParser.hpp"
-#include "../ResponseParser.hpp"
-
-#include <Buffers/OutputStream.hpp>
-
-#include <sstream>
+#include "RequestParser.hpp"
+#include "ResponseParser.hpp"
 
 #include <Logger/Console.hpp>
 
@@ -21,19 +17,19 @@ namespace Async
 {
 	namespace HTTP
 	{
-		namespace Protocol
+		namespace V1
 		{
 			using namespace Logger;
 			
-			HTTP1::HTTP1(Network::Socket & socket, Reactor & reactor) : StreamProtocol(socket, reactor), _buffer(1024*8, true)
+			Protocol::Protocol(Network::Socket & socket, Reactor & reactor) : StreamProtocol(socket, reactor), _buffer(1024*8, true)
 			{
 			}
 			
-			HTTP1::~HTTP1()
+			Protocol::~Protocol()
 			{
 			}
 			
-			bool HTTP1::fill_buffer()
+			bool Protocol::fill_buffer()
 			{
 				if (_buffer.size() == 0) {
 					auto mark = read(_buffer.end(), _buffer.top());
@@ -51,7 +47,7 @@ namespace Async
 				return true;
 			}
 			
-			bool HTTP1::read_request(Request & request)
+			bool Protocol::read_request(Request & request)
 			{
 				auto parser = RequestParser(request);
 				
@@ -75,7 +71,7 @@ namespace Async
 				return true;
 			}
 			
-			bool HTTP1::read_response(Response & response)
+			bool Protocol::read_response(Response & response)
 			{
 				auto parser = ResponseParser(response);
 				
@@ -99,17 +95,17 @@ namespace Async
 				return true;
 			}
 			
-			void HTTP1::write_response(const Response & response)
+			void Protocol::write_response(const Response & response)
 			{
 				write_response(response.status, response.headers, response.body);
 			}
 			
-			void HTTP1::write_request(const Request & request)
+			void Protocol::write_request(const Request & request)
 			{
 				write_request(request.method, request.target, request.version, request.headers, request.body);
 			}
 			
-			void HTTP1::write_request(const std::string & method, const std::string & target, const std::string & version, const std::map<std::string, std::string> & headers, const std::string & body)
+			void Protocol::write_request(const std::string & method, const std::string & target, const std::string & version, const std::map<std::string, std::string> & headers, const std::string & body)
 			{
 				std::stringstream stream;
 				
@@ -129,7 +125,7 @@ namespace Async
 					write(body);
 			}
 			
-			void HTTP1::write_response(const std::uint32_t & status, const std::map<std::string, std::string> & headers, const std::string & body)
+			void Protocol::write_response(const std::uint32_t & status, const std::map<std::string, std::string> & headers, const std::string & body)
 			{
 				std::stringstream stream;
 				
@@ -148,6 +144,7 @@ namespace Async
 				if (body.size() > 0)
 					write(body);
 			}
+
 		}
 	}
 }
