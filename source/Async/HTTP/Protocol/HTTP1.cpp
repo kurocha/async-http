@@ -15,12 +15,16 @@
 
 #include <sstream>
 
+#include <Logger/Console.hpp>
+
 namespace Async
 {
 	namespace HTTP
 	{
 		namespace Protocol
 		{
+			using namespace Logger;
+			
 			HTTP1::HTTP1(Network::Socket & socket, Reactor & reactor) : StreamProtocol(socket, reactor), _buffer(1024*8, true)
 			{
 			}
@@ -29,58 +33,83 @@ namespace Async
 			{
 			}
 			
-			void HTTP1::fill_buffer()
+			bool HTTP1::fill_buffer()
 			{
 				if (_buffer.size() == 0) {
 					auto mark = read(_buffer.end(), _buffer.top());
 					
-					_buffer.expand(mark - _buffer.end());
+					Console::debug(__PRETTY_FUNCTION__, mark - _buffer.end());
+					
+					if (mark == _buffer.end()) {
+						return false;
+					} else {
+						_buffer.expand(mark - _buffer.end());
+						return true;
+					}
 				}
+				
+				return true;
 			}
 			
-			Request HTTP1::read_request()
+			bool HTTP1::read_request(Request & request)
 			{
-				Request request;
-				
 				auto parser = RequestParser(request);
 				
 				while (!parser.complete()) {
-					fill_buffer();
+					if (fill_buffer() == false) {
+						// connection shutdown
+						return false;
+					}
 					
 					auto mark = parser.parse(_buffer.begin(), _buffer.end());
 					
 					if (mark != _buffer.end()) {
-						// uh oh.
+						Console::error("Couldn't parse buffer", (void*)mark, (void*) _buffer.end());
+						Console::error("contents:", std::string((const char *)mark, (const char *)_buffer.end()));
+						return false;
 					} else {
 						_buffer.resize(0);
 					}
 				}
 				
-				return request;
+				return true;
 			}
 			
-			Response HTTP1::read_response()
+			bool HTTP1::read_response(Response & response)
 			{
-				Response response;
-				
 				auto parser = ResponseParser(response);
 				
 				while (!parser.complete()) {
-					fill_buffer();
+					if (fill_buffer() == false) {
+						// connection shutdown
+						return false;
+					}
 					
 					auto mark = parser.parse(_buffer.begin(), _buffer.end());
 					
 					if (mark != _buffer.end()) {
-						// uh oh.
+						Console::error("Couldn't parse buffer", (void*)mark, (void*) _buffer.end());
+						Console::error("contents:", std::string((const char *)mark, (const char *)_buffer.end()));
+						return false;
 					} else {
 						_buffer.resize(0);
 					}
 				}
 				
-				return response;
+				return true;
 			}
 			
-			void HTTP1::write_request(std::string method, std::string target, std::string version, std::map<std::string, std::string> headers, std::string body)
+			void HTTP1::write_response(const Response & response)
+			{
+				write_response(response.status, response.headers, response.body);
+			}
+			
+			void HTTP1::write_request(const Request & request)
+			{
+				write_request(request.method, request.target, request.version, request.headers, request.body);
+			}
+			
+			void HTTP1::write_request(const std::string & method, const std::string & target, const std::string & version, const std::map<std::string, std::string> & headers, const std::string & body)
 			{
 				std::stringstream stream;
 				
@@ -90,9 +119,7 @@ namespace Async
 					stream << header.first << ": " << header.second << "\r\n";
 				}
 				
-				if (body.size() > 0) {
-					stream << "Content-Length: " << body.size() << "\r\n\r\n";
-				}
+				stream << "Content-Length: " << body.size() << "\r\n\r\n";
 				
 				stream.flush();
 				
@@ -102,19 +129,17 @@ namespace Async
 					write(body);
 			}
 			
-			void HTTP1::write_response(std::uint32_t status, std::map<std::string, std::string> headers, std::string body)
+			void HTTP1::write_response(const std::uint32_t & status, const std::map<std::string, std::string> & headers, const std::string & body)
 			{
 				std::stringstream stream;
 				
 				stream << "HTTP/1.1 " << status << "\r\n";
 				
 				for (auto & header : headers) {
-					stream << header.first << ": " << header.second << std::endl;
+					stream << header.first << ": " << header.second << "\r\n";
 				}
 				
-				if (body.size() > 0) {
-					stream << "Content-Length: " << body.size() << "\r\n\r\n";
-				}
+				stream << "Content-Length: " << body.size() << "\r\n\r\n";
 				
 				stream.flush();
 				

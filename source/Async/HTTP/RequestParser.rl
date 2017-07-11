@@ -54,7 +54,13 @@ namespace Async
 					fnext http_chunked_body;
 				} else {
 					_remaining_body_size = content_length();
-					fnext http_content_body;
+					
+					if (_remaining_body_size > 0) {
+						fnext http_content_body;
+					} else {
+						_complete = true;
+						fbreak;
+					}
 				}
 			}
 			

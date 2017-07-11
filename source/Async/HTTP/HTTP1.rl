@@ -9,6 +9,7 @@
 	
 	# Visible, printable characters.
 	http_vchar = print - ' ';
+	http_space = [ \t];
 	
 	http_tchar = ("!" | "#" | "$" | "%" | "&" | "'" | "*" | "+" | "-" | "." | "^" | "_" | "`" | "|" | "~" | [0-9] | [a-zA-Z]);
 	http_token = http_tchar+;
@@ -22,14 +23,14 @@
 	http_reason = http_vchar+ >mark %http_reason;
 	
 	http_header_name = http_token >mark %http_header_name;
-	http_header_value = http_token >mark %http_header_value;
-	http_header = http_header_name ':' space* http_header_value http_crlf;
+	http_header_value = (http_vchar | http_space)+ >mark %http_header_value;
+	http_header = http_header_name ':' http_space* http_header_value http_crlf;
 	
 	# The first line of the request.
-	http_request_line = http_method space http_target space http_version http_crlf;
+	http_request_line = http_method ' ' http_target ' ' http_version http_crlf;
 	
 	# The first line of the response.
-	http_status_line = http_version space http_status (space http_reason)? http_crlf;
+	http_status_line = http_version ' ' http_status (' ' http_reason)? http_crlf;
 	
 	# The two main entry points.
 	http_request = http_request_line (http_header)* http_crlf @http_body;

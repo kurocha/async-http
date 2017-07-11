@@ -30,18 +30,19 @@ namespace Async
 				HTTP1(Network::Socket & socket, Reactor & reactor);
 				virtual ~HTTP1();
 				
-				Request read_request();
-				Response read_response();
+				bool read_request(Request & request);
+				bool read_response(Response & response);
 				
 				void write_response(const Response & response);
+				void write_request(const Request & request);
 				
-				void write_request(std::string method, std::string target, std::string version, std::map<std::string, std::string> headers, std::string body);
-				void write_response(std::uint32_t status, std::map<std::string, std::string> headers, std::string body);
+				void write_request(const std::string & method, const std::string & target, const std::string & version, const std::map<std::string, std::string> & headers, const std::string & body);
+				void write_response(const std::uint32_t & status, const std::map<std::string, std::string> & headers, const std::string & body);
 				
 			protected:
 				Buffers::DynamicBuffer _buffer;
 				
-				void fill_buffer();
+				bool fill_buffer();
 			};
 		}
 	}

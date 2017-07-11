@@ -14,6 +14,9 @@
 #include <Async/Reactor.hpp>
 #include <Async/Protocol.hpp>
 
+#include <Async/HTTP/Server.hpp>
+#include <Async/HTTP/Protocol/HTTP1.hpp>
+
 namespace Async
 {
 	namespace HTTP
@@ -28,7 +31,36 @@ namespace Async
 					// Addresses for the server.
 					auto endpoints = Network::Endpoint::service_endpoints(8080, SOCK_STREAM);
 					
-					//server.resume();
+					auto server = Server();
+					
+					auto task = server.run(endpoints, reactor);
+					
+					task->resume();
+					
+					Concurrent::Fiber client([&]{
+						Request request = {
+							"GET", "/hello-world", "HTTP/1.1",
+							{{"Accept", "*/*"}},
+							""
+						};
+						
+						for (auto & endpoint : endpoints) {
+							auto socket = endpoint.connect(reactor);
+							
+							Protocol::HTTP1 protocol(socket, reactor);
+							
+							protocol.write_request(request);
+							
+							Response response;
+							
+							examiner.expect(protocol.read_response(response)) == true;
+							examiner.expect(response.status) == 200;
+						}
+					});
+					
+					client.resume();
+					
+					reactor.wait(1.0);
 				}
 			},
 		};

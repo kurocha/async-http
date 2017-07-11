@@ -43,12 +43,23 @@ namespace Async
 			}
 			
 			bool is_chunked_body() {
-				return _response.headers["Transfer-Encoding"] == "chunked";
+				auto value = _response.headers.find("Transfer-Encoding");
+				
+				if (value == _response.headers.end()) {
+					return false;
+				} else {
+					return value->second == "chunked";
+				}
 			}
 			
 			std::size_t content_length() {
-				// TODO This needs to be more robust.
-				return std::stoul(_response.headers["Content-Length"], nullptr, 10);
+				auto value = _response.headers.find("Content-Length");
+				
+				if (value == _response.headers.end()) {
+					return 0;
+				} else  {
+					return std::stoul(value->second, nullptr, 10);
+				}
 			}
 			
 			std::size_t _remaining_body_size = 0;

@@ -41,21 +41,27 @@ namespace Async
 						
 						socket.listen();
 						
-						Console::info("Server", (Descriptor)socket, "listening to", endpoint.address());
+						Console::info("Server", socket, "listening to", endpoint.address());
 						
 						while (true) {
 							connections.resume([&, client = socket.accept(reactor)]() mutable {
+								Console::info("Client", client, "connected from", client.remote_address());
 								Protocol::HTTP1 protocol(client, reactor);
 								
-								while (true) {
-									auto request = protocol.read_request();
-									
+								Request request;
+								while (protocol.read_request(request)) {
 									// Generate a response:
+									Console::debug("Client", client, "requested", request.target);
 									auto response = this->process(request);
 									
 									// Send the response back:
+									Console::debug("Sending response", response.status, "to client", client);
 									protocol.write_response(response);
+									
+									client.shutdown();
 								}
+								
+								Console::debug("Client", client, "finished");
 							});
 						}
 					});
@@ -72,7 +78,7 @@ namespace Async
 			return {
 				request.version, 200, "",
 				{
-					{"Content-Type", "text/plain"}
+					{"Content-Type", "text/plain"},
 				},
 				""
 			};
