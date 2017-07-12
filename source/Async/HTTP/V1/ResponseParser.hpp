@@ -23,7 +23,7 @@ namespace Async
 				ResponseParser(Response & request);
 				virtual ~ResponseParser();
 				
-				const Byte * parse(const Byte * begin, const Byte * end);
+				std::size_t parse(const Byte * begin, const Byte * end);
 			};
 		}
 	}

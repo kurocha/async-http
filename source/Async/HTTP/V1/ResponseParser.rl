@@ -37,7 +37,11 @@ namespace Async
 			{
 			}
 			
-			const Byte * ResponseParser::parse(const Byte * p, const Byte * pe) {
+			std::size_t ResponseParser::parse(const Byte * begin, const Byte * end)
+			{
+				auto p = begin;
+				auto pe = end;
+				
 				const Byte * eof = pe;
 				const Byte * mark = _marked ? p : nullptr;
 				
@@ -49,7 +53,7 @@ namespace Async
 					_split.append(mark, pe);
 				}
 				
-				return p;
+				return p-begin;
 			}
 		}
 	}

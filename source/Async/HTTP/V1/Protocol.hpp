@@ -8,13 +8,12 @@
 
 #pragma once
 
-#include <Async/Protocol.hpp>
 #include <Async/Network/Socket.hpp>
+#include <Async/Protocol/Stream.hpp>
+#include <Async/Protocol/Buffer.hpp>
 
 #include "../Request.hpp"
 #include "../Response.hpp"
-
-#include <Buffers/DynamicBuffer.hpp>
 
 namespace Async
 {
@@ -22,7 +21,9 @@ namespace Async
 	{
 		namespace V1
 		{
-			class Protocol : protected Async::StreamProtocol
+			using namespace Async::Protocol;
+			
+			class Protocol : protected Stream
 			{
 			public:
 				Protocol(Network::Socket & socket, Reactor & reactor);
@@ -38,9 +39,10 @@ namespace Async
 				void write_response(const std::uint32_t & status, const std::map<std::string, std::string> & headers, const std::string & body);
 				
 			protected:
-				Buffers::DynamicBuffer _buffer;
+				Buffer _buffer;
 				
-				bool fill_buffer();
+				template <typename ParserT>
+				bool read_into_parser(ParserT & parser);
 			};
 		}
 	}

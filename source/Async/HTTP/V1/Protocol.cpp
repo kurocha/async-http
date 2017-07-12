@@ -21,7 +21,7 @@ namespace Async
 		{
 			using namespace Logger;
 			
-			Protocol::Protocol(Network::Socket & socket, Reactor & reactor) : StreamProtocol(socket, reactor), _buffer(1024*8, true)
+			Protocol::Protocol(Network::Socket & socket, Reactor & reactor) : Protocol::Stream(socket, reactor), _buffer(1024*8)
 			{
 			}
 			
@@ -29,18 +29,24 @@ namespace Async
 			{
 			}
 			
-			bool Protocol::fill_buffer()
+			template <typename ParserT>
+			bool Protocol::read_into_parser(ParserT & parser)
 			{
-				if (_buffer.size() == 0) {
-					auto mark = read(_buffer.end(), _buffer.top());
+				Readable readable(_descriptor, _reactor);
+				
+				while (!parser.complete()) {
+					auto result = _buffer.read_from(_descriptor, readable);
 					
-					Console::debug(__PRETTY_FUNCTION__, mark - _buffer.end());
+					if (result == Result::CLOSED || _buffer.empty()) {
+						return false;
+					}
 					
-					if (mark == _buffer.end()) {
+					auto amount = parser.parse(_buffer.begin(), _buffer.end());
+					
+					if (amount == 0) {
 						return false;
 					} else {
-						_buffer.expand(mark - _buffer.end());
-						return true;
+						_buffer.consume(amount);
 					}
 				}
 				
@@ -51,48 +57,16 @@ namespace Async
 			{
 				auto parser = RequestParser(request);
 				
-				while (!parser.complete()) {
-					if (fill_buffer() == false) {
-						// connection shutdown
-						return false;
-					}
-					
-					auto mark = parser.parse(_buffer.begin(), _buffer.end());
-					
-					if (mark != _buffer.end()) {
-						Console::error("Couldn't parse buffer", (void*)mark, (void*) _buffer.end());
-						Console::error("contents:", std::string((const char *)mark, (const char *)_buffer.end()));
-						return false;
-					} else {
-						_buffer.resize(0);
-					}
-				}
-				
-				return true;
+				return read_into_parser(parser);
 			}
 			
 			bool Protocol::read_response(Response & response)
 			{
+				Readable readable(_descriptor, _reactor);
+				
 				auto parser = ResponseParser(response);
 				
-				while (!parser.complete()) {
-					if (fill_buffer() == false) {
-						// connection shutdown
-						return false;
-					}
-					
-					auto mark = parser.parse(_buffer.begin(), _buffer.end());
-					
-					if (mark != _buffer.end()) {
-						Console::error("Couldn't parse buffer", (void*)mark, (void*) _buffer.end());
-						Console::error("contents:", std::string((const char *)mark, (const char *)_buffer.end()));
-						return false;
-					} else {
-						_buffer.resize(0);
-					}
-				}
-				
-				return true;
+				return read_into_parser(parser);
 			}
 			
 			void Protocol::write_response(const Response & response)

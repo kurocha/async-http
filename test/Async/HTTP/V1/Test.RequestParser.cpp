@@ -9,7 +9,8 @@
 #include <UnitTest/UnitTest.hpp>
 
 #include <Async/HTTP/V1/RequestParser.hpp>
-#include <Buffers/StaticBuffer.hpp>
+
+#include <iterator>
 
 namespace Async
 {
@@ -22,11 +23,11 @@ namespace Async
 				
 				{"it can parse request line",
 					[](UnitTest::Examiner & examiner) {
-						Buffers::StaticBuffer buffer("GET /foobar HTTP/1.1\r\n");
+						unsigned char buffer[] = "GET /foobar HTTP/1.1\r\n";
 						
 						Request request;
 						RequestParser request_parser(request);
-						request_parser.parse(buffer.begin(), buffer.end());
+						request_parser.parse(std::begin(buffer), std::end(buffer));
 						
 						examiner.expect(request_parser.complete()) == false;
 						
@@ -38,12 +39,12 @@ namespace Async
 				
 				{"it can parse request line in partial chunks",
 					[](UnitTest::Examiner & examiner) {
-						Buffers::StaticBuffer buffer("GET /foobar HTTP/1.1\r\n");
+						unsigned char buffer[] = "GET /foobar HTTP/1.1\r\n";
 						
 						Request request;
 						RequestParser request_parser(request);
 						
-						for (auto current = buffer.begin(); (current+1) < buffer.end(); current += 1) {
+						for (auto current = std::begin(buffer); (current+1) < std::end(buffer); current += 1) {
 							request_parser.parse(current, current+1);
 						}
 						
@@ -57,11 +58,11 @@ namespace Async
 				
 				{"it can parse request with headers",
 					[](UnitTest::Examiner & examiner) {
-						Buffers::StaticBuffer buffer("POST /foobar HTTP/1.1\r\nContent-Length: 0\r\n\r\n");
+						unsigned char buffer[] = "POST /foobar HTTP/1.1\r\nContent-Length: 0\r\n\r\n";
 						
 						Request request;
 						RequestParser request_parser(request);
-						request_parser.parse(buffer.begin(), buffer.end());
+						request_parser.parse(std::begin(buffer), std::end(buffer));
 						examiner.expect(request_parser.complete()) == true;
 						
 						examiner.expect(request.method) == "POST";
@@ -74,11 +75,11 @@ namespace Async
 				
 				{"it can parse request with content body",
 					[](UnitTest::Examiner & examiner) {
-						Buffers::StaticBuffer buffer("POST /foobar HTTP/1.1\r\nContent-Length: 10\r\n\r\n0123456789");
+						unsigned char buffer[] = "POST /foobar HTTP/1.1\r\nContent-Length: 10\r\n\r\n0123456789";
 						
 						Request request;
 						RequestParser request_parser(request);
-						request_parser.parse(buffer.begin(), buffer.end());
+						request_parser.parse(std::begin(buffer), std::end(buffer));
 						examiner.expect(request_parser.complete()) == true;
 						
 						examiner.expect(request.method) == "POST";
@@ -92,11 +93,11 @@ namespace Async
 				
 				{"it can parse request with chunked body",
 					[](UnitTest::Examiner & examiner) {
-						Buffers::StaticBuffer buffer("POST /foobar HTTP/1.1\r\nTransfer-Encoding: chunked\r\n\r\n4\r\n0123\r\n6\r\n456789\r\n0\r\n\r\n");
+						unsigned char buffer[] = "POST /foobar HTTP/1.1\r\nTransfer-Encoding: chunked\r\n\r\n4\r\n0123\r\n6\r\n456789\r\n0\r\n\r\n";
 						
 						Request request;
 						RequestParser request_parser(request);
-						request_parser.parse(buffer.begin(), buffer.end());
+						request_parser.parse(std::begin(buffer), std::end(buffer));
 						examiner.expect(request_parser.complete()) == true;
 						
 						examiner.expect(request.method) == "POST";

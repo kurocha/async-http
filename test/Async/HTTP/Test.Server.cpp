@@ -12,7 +12,6 @@
 #include <Async/Network/Endpoint.hpp>
 #include <Async/Network/Socket.hpp>
 #include <Async/Reactor.hpp>
-#include <Async/Protocol.hpp>
 
 #include <Async/HTTP/Server.hpp>
 #include <Async/HTTP/V1/Protocol.hpp>
