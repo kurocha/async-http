@@ -35,8 +35,8 @@ namespace Async
 				void write_response(const Response & response);
 				void write_request(const Request & request);
 				
-				void write_request(const std::string & method, const std::string & target, const std::string & version, const std::map<std::string, std::string> & headers, const std::string & body);
-				void write_response(const std::uint32_t & status, const std::map<std::string, std::string> & headers, const std::string & body);
+				void write_request(const std::string & method, const std::string & target, const Version & version, const Headers & headers, const std::string & body);
+				void write_response(const std::uint32_t & status, const Version & version, const Headers & headers, const std::string & body);
 				
 			protected:
 				Buffer _buffer;

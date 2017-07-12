@@ -38,7 +38,7 @@ namespace Async
 					
 					Concurrent::Fiber client([&]{
 						Request request = {
-							"GET", "/hello-world", "HTTP/1.1",
+							"GET", "/hello-world", Version::HTTP_11,
 							{{"Accept", "*/*"}},
 							""
 						};

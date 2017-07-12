@@ -16,7 +16,12 @@
 	http_crlf = "\r\n";
 	
 	http_method = http_token >mark %http_method;
-	http_version = ("HTTP/1." [01]) >mark %http_version;
+	# http_version = ("HTTP/1." [01]) >mark %http_version;
+	http_version = (
+		"HTTP/1.0" %http_version_10 |
+		"HTTP/1.1" %http_version_11
+	);
+	
 	http_status = ([0-9]{3}) >mark %http_status;
 	http_target = http_vchar+ >mark %http_target;
 	http_reason = http_vchar+ >mark %http_reason;

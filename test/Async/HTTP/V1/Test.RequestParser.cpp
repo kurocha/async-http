@@ -33,7 +33,7 @@ namespace Async
 						
 						examiner.expect(request.method) == "GET";
 						examiner.expect(request.target) == "/foobar";
-						examiner.expect(request.version) == "HTTP/1.1";
+						examiner.expect(request.version) == Version::HTTP_11;
 					}
 				},
 				
@@ -52,7 +52,7 @@ namespace Async
 						
 						examiner.expect(request.method) == "GET";
 						examiner.expect(request.target) == "/foobar";
-						examiner.expect(request.version) == "HTTP/1.1";
+						examiner.expect(request.version) == Version::HTTP_11;
 					}
 				},
 				
@@ -67,7 +67,7 @@ namespace Async
 						
 						examiner.expect(request.method) == "POST";
 						examiner.expect(request.target) == "/foobar";
-						examiner.expect(request.version) == "HTTP/1.1";
+						examiner.expect(request.version) == Version::HTTP_11;
 						
 						examiner.expect(request.headers["Content-Length"]) == "0";
 					}
@@ -84,7 +84,7 @@ namespace Async
 						
 						examiner.expect(request.method) == "POST";
 						examiner.expect(request.target) == "/foobar";
-						examiner.expect(request.version) == "HTTP/1.1";
+						examiner.expect(request.version) == Version::HTTP_11;
 						
 						examiner.expect(request.headers["Content-Length"]) == "10";
 						examiner.expect(request.body) == "0123456789";
@@ -102,7 +102,7 @@ namespace Async
 						
 						examiner.expect(request.method) == "POST";
 						examiner.expect(request.target) == "/foobar";
-						examiner.expect(request.version) == "HTTP/1.1";
+						examiner.expect(request.version) == Version::HTTP_11;
 						
 						examiner.expect(request.body) == "0123456789";
 					}

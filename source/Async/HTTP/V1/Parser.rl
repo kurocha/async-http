@@ -31,9 +31,17 @@
 	}
 
 	action http_version {
-		_object.version = read_marked(mark, p);
+		//_object.version = read_marked(mark, p);
 	}
 
+	action http_version_10 {
+		_object.version = Version::HTTP_10;
+	}
+	
+	action http_version_11 {
+		_object.version = Version::HTTP_11;
+	}
+	
 	action http_header_name {
 		_header_name = read_marked(mark, p);
 	}

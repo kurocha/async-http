@@ -9,7 +9,9 @@
 #pragma once
 
 #include <string>
-#include <map>
+
+#include "Headers.hpp"
+#include "Version.hpp"
 
 namespace Async
 {
@@ -17,18 +19,23 @@ namespace Async
 	{
 		struct Response
 		{
-			std::string version;
-			uint32_t status;
+			Version version;
+			std::uint16_t status;
 			std::string reason;
 			
-			std::map<std::string, std::string> headers;
+			Headers headers;
 			
 			std::string body;
 			
-			bool is_continue() {return status == 100;}
-			bool is_success() {return status >= 200 && status < 300;}
-			bool is_redirection() {return status >= 300 && status < 400;}
-			bool is_failure() {return status >= 400 && status < 600;}
+			bool is_continue() const noexcept {return status == 100;}
+			bool is_success() const noexcept {return status >= 200 && status < 300;}
+			bool is_redirection() const noexcept {return status >= 300 && status < 400;}
+			bool is_failure() const noexcept {return status >= 400 && status < 600;}
+			
+			bool should_keep_alive() const {
+				// keep-alive defaults to true for anything other than HTTP_10:
+				return keep_alive(headers, default_keep_alive(version));
+			}
 		};
 	}
 }

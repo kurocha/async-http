@@ -71,7 +71,7 @@ namespace Async
 			
 			void Protocol::write_response(const Response & response)
 			{
-				write_response(response.status, response.headers, response.body);
+				write_response(response.status, response.version, response.headers, response.body);
 			}
 			
 			void Protocol::write_request(const Request & request)
@@ -79,7 +79,7 @@ namespace Async
 				write_request(request.method, request.target, request.version, request.headers, request.body);
 			}
 			
-			void Protocol::write_request(const std::string & method, const std::string & target, const std::string & version, const std::map<std::string, std::string> & headers, const std::string & body)
+			void Protocol::write_request(const std::string & method, const std::string & target, const Version & version, const Headers & headers, const std::string & body)
 			{
 				std::stringstream stream;
 				
@@ -99,11 +99,11 @@ namespace Async
 					write(body);
 			}
 			
-			void Protocol::write_response(const std::uint32_t & status, const std::map<std::string, std::string> & headers, const std::string & body)
+			void Protocol::write_response(const std::uint32_t & status, const Version & version, const Headers & headers, const std::string & body)
 			{
 				std::stringstream stream;
 				
-				stream << "HTTP/1.1 " << status << "\r\n";
+				stream << version << " " << status << "\r\n";
 				
 				for (auto & header : headers) {
 					stream << header.first << ": " << header.second << "\r\n";
