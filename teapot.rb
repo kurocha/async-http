@@ -49,6 +49,7 @@ define_target 'async-http-library' do |target|
 	target.depends "Convert/Ragel", private: true
 	
 	target.depends "Library/Logger"
+	target.depends "Library/URI"
 	
 	target.depends "Library/Async"
 	target.depends "Library/AsyncNetwork"
@@ -85,6 +86,7 @@ define_configuration "async-http" do |configuration|
 	configuration.require "time"
 	configuration.require "concurrent"
 	configuration.require "logger"
+	configuration.require "uri"
 	
 	configuration.require "async"
 	configuration.require "async-network"

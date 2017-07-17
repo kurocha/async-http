@@ -1,4 +1,3 @@
-
 %%{
 	# An HTTP request grammar. Can parse both http_request and http_response.
 	# Based on https://tools.ietf.org/html/rfc7230
