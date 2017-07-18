@@ -13,6 +13,8 @@
 #include <Async/HTTP/Version.hpp>
 #include <URI/Generic.hpp>
 
+#include <Logger/Console.hpp>
+
 namespace Async
 {
 	namespace HTTP
@@ -23,6 +25,9 @@ namespace Async
 			{"it can request remote resource",
 				[](UnitTest::Examiner & examiner) {
 					using namespace Concurrent;
+					using namespace Logger;
+					
+					tzset();
 					
 					Reactor reactor;
 					
@@ -31,9 +36,10 @@ namespace Async
 						
 						auto endpoints = Network::Endpoint::named_endpoints(remote_uri.host, remote_uri.port.empty() ? "80" : remote_uri.port, SOCK_STREAM);
 						
+						Console::info("Connecting to", remote_uri.host);
 						auto client = Client(endpoints, reactor);
 						
-						HTTP::Request request = {"HEAD", remote_uri.path.value, HTTP::Version::HTTP_11, {
+						HTTP::Request request = {"GET", remote_uri.path.value, HTTP::Version::HTTP_11, {
 							{"Host", remote_uri.host},
 							{"Accept", "image/*"},
 							{"Connection", "close"},
@@ -41,9 +47,12 @@ namespace Async
 						
 						Response response;
 						
+						Console::info("Sending request", request.target);
 						if (client.send(request, response)) {
+							Console::info("Got response", response.status, response.body.size());
 							examiner.expect(response.status) == 200;
 							examiner.expect(response.headers["Content-Type"]) == "image/svg+xml";
+							examiner.check(!response.body.empty());
 							
 							for (const auto & header : response.headers) {
 								std::cerr << header.first << ": " << header.second << std::endl;

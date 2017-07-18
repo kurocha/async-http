@@ -16,6 +16,8 @@ namespace Async
 		{
 			for (auto & endpoint : endpoints) {
 				_socket = endpoint.connect(reactor);
+				
+				// TODO the protocol version should probably be explicitly selected by the nework endpoint.
 				_protocol = Memory::shared<V1::Protocol>(_socket, reactor);
 				
 				break;

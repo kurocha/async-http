@@ -24,14 +24,11 @@
 	action http_reason {
 		// ignore
 		mark = nullptr;
+		_marked = false;
 	}
 
 	action http_target {
 		_object.target = read_marked(mark, p);
-	}
-
-	action http_version {
-		//_object.version = read_marked(mark, p);
 	}
 
 	action http_version_10 {
@@ -64,7 +61,7 @@
 			}
 		}
 	}
-
+	
 	action http_read_content {
 		// We may need to read data.
 		if (_remaining_body_size > 0) {
@@ -85,9 +82,6 @@
 	action http_chunk_size {
 		auto hex_size = read_marked(mark, p);
 		_remaining_body_size = std::stoul(hex_size, nullptr, 16);
-		
-		if (_remaining_body_size == 0) {
-		}
 	}
 
 	action http_complete {

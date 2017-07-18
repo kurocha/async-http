@@ -9,6 +9,7 @@
 #pragma once
 
 #include <string>
+#include <cassert>
 
 namespace Async
 {
@@ -80,6 +81,8 @@ namespace Async
 				std::size_t _remaining_body_size = 0;
 				
 				std::size_t append_body(const Byte * begin, const Byte * end) {
+					assert(begin != nullptr);
+					
 					std::size_t available = end - begin;
 					
 					std::size_t required = std::min(available, _remaining_body_size);

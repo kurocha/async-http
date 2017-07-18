@@ -11,7 +11,7 @@
 #include "RequestParser.hpp"
 #include "ResponseParser.hpp"
 
-#include <Logger/Console.hpp>
+#include <sstream>
 
 namespace Async
 {
@@ -19,8 +19,6 @@ namespace Async
 	{
 		namespace V1
 		{
-			using namespace Logger;
-			
 			Protocol::Protocol(Network::Socket & socket, Reactor & reactor) : Protocol::Stream(socket, reactor), _buffer(1024*8)
 			{
 			}
@@ -37,7 +35,7 @@ namespace Async
 				while (!parser.complete()) {
 					auto result = _buffer.read_from(_descriptor, readable);
 					
-					if (result == Result::CLOSED || _buffer.empty()) {
+					if (_buffer.empty()) {
 						return false;
 					}
 					
