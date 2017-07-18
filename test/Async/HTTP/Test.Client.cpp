@@ -27,7 +27,7 @@ namespace Async
 					using namespace Concurrent;
 					using namespace Logger;
 					
-					tzset();
+					Console::info("Preparing to connect");
 					
 					Reactor reactor;
 					
