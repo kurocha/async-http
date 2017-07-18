@@ -52,7 +52,7 @@ namespace Async
 								while (protocol.read_request(request)) {
 									// Generate a response:
 									// Console::debug("Client", client, "requested", request.target);
-									auto response = this->process(request);
+									auto response = this->process(request, reactor);
 									
 									// Send the response back:
 									// Console::debug("Sending response", response.status, "to client", client);
@@ -76,7 +76,7 @@ namespace Async
 			return server;
 		}
 		
-		Response Server::process(const Request & request)
+		Response Server::process(const Request & request, Reactor & reactor)
 		{
 			return {
 				request.version, 200, "",
