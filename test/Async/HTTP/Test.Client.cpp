@@ -32,7 +32,7 @@ namespace Async
 					Reactor reactor;
 					
 					Fiber task([&]{
-						auto remote_uri = URI::Generic::parse("http://www.oriontransfer.co.nz/_static/logo.svg");
+						auto remote_uri = URI::Generic("http://www.oriontransfer.co.nz/_static/logo.svg");
 						
 						auto endpoints = Network::Endpoint::named_endpoints(remote_uri.host, remote_uri.port.empty() ? "80" : remote_uri.port, SOCK_STREAM);
 						
