@@ -93,7 +93,7 @@ namespace Async
 				
 				write(stream.str());
 				
-				if (body.size() > 0)
+				if (!body.empty())
 					write(body);
 			}
 			
@@ -113,7 +113,7 @@ namespace Async
 				
 				write(stream.str());
 				
-				if (body.size() > 0)
+				if (!body.empty())
 					write(body);
 			}
 
