@@ -24,14 +24,14 @@ end
 define_target 'async-http-library' do |target|
 	target.build do
 		source_root = target.package.path + 'source'
-		cache_prefix = Path.join(environment[:build_prefix], "async-http-#{environment.checksum}")
+		cache_prefix = environment[:build_prefix] / environment.checksum
 		
 		copy headers: source_root.glob('Async/**/*.hpp')
 		
 		parsers = source_root.glob('Async/HTTP/**/*Parser.rl')
 		
 		implementation_files = parsers.collect do |file|
-			implementation_file = cache_prefix + (file.relative_path + '.cpp')
+			implementation_file = cache_prefix / (file.relative_path + '.cpp')
 			convert source_file: file, destination_path: implementation_file
 		end
 		
