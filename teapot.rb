@@ -79,19 +79,9 @@ end
 
 # Configurations
 
-define_configuration "async-http" do |configuration|
-	configuration[:source] = "https://github.com/kurocha"
-	
-	configuration.require "memory"
-	configuration.require "time"
-	configuration.require "concurrent"
-	configuration.require "logger"
-	configuration.require "uri"
-	
-	configuration.require "async"
-	configuration.require "async-network"
-	
-	configuration.require "ragel"
+define_configuration "development" do |configuration|
+	configuration[:source] = "https://github.com/kurocha/"
+	configuration.import "async-http"
 	
 	# Provides all the build related infrastructure:
 	configuration.require "platforms"
@@ -105,4 +95,19 @@ define_configuration "async-http" do |configuration|
 	
 	configuration.require 'generate-project'
 	configuration.require 'generate-travis'
+end
+
+define_configuration "async-http" do |configuration|
+	configuration.public!
+	
+	configuration.require "memory"
+	configuration.require "time"
+	configuration.require "concurrent"
+	configuration.require "logger"
+	configuration.require "uri"
+	
+	configuration.require "async"
+	configuration.require "async-network"
+	
+	configuration.require "ragel"
 end
