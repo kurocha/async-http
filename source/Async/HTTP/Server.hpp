@@ -29,7 +29,7 @@ namespace Async
 			
 			Memory::Shared<Concurrent::Fiber> run(const Network::Endpoints & endpoints, Reactor & reactor);
 			
-			virtual Response process(const Request & request, Reactor & reactor);
+			virtual Response process(const Network::Socket & peer, const Request & request, Reactor & reactor);
 		};
 	}
 }

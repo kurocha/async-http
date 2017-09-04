@@ -37,22 +37,21 @@ namespace Async
 					bindings.resume([&]{
 						Fiber::Pool connections;
 						
+						// The server socket:
 						auto socket = endpoint.bind();
-						
 						socket.listen();
-						
 						Console::info("Server", socket, "listening to", endpoint.address());
 						
 						while (true) {
 							connections.resume([&, client = socket.accept(reactor)]() mutable {
-								// Console::info("Client", client, "connected from", client.remote_address());
+								Console::debug("Client", client, "connected from", client.remote_address());
 								V1::Protocol protocol(client, reactor);
 								
 								Request request;
 								while (protocol.read_request(request)) {
 									// Generate a response:
 									// Console::debug("Client", client, "requested", request.target);
-									auto response = this->process(request, reactor);
+									auto response = this->process(client, request, reactor);
 									
 									// Send the response back:
 									// Console::debug("Sending response", response.status, "to client", client);
@@ -76,12 +75,11 @@ namespace Async
 			return server;
 		}
 		
-		Response Server::process(const Request & request, Reactor & reactor)
+		Response Server::process(const Network::Socket & peer, const Request & request, Reactor & reactor)
 		{
 			return {
-				request.version, 200, "",
+				request.version, 404, "",
 				{
-					{"Content-Type", "text/plain"},
 					{"Connection", request.should_keep_alive() ? "keep-alive" : "close"}
 				},
 				""
