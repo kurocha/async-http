@@ -42,7 +42,7 @@ namespace Async
 				auto p = begin;
 				auto pe = end;
 				
-				const Byte * eof = pe;
+				const Byte * eof = end;
 				const Byte * mark = _marked ? p : nullptr;
 				
 				%%{

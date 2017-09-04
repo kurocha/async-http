@@ -11,6 +11,7 @@
 #include "RequestParser.hpp"
 #include "ResponseParser.hpp"
 
+#include <iostream>
 #include <sstream>
 
 namespace Async
@@ -41,11 +42,15 @@ namespace Async
 					
 					auto amount = parser.parse(_buffer.begin(), _buffer.end());
 					
+					// std::cerr << "Parsed " << amount << std::endl;
+					
 					if (amount == 0) {
 						return false;
 					} else {
 						_buffer.consume(amount);
 					}
+					
+					// std::cerr << "Complete? " << parser.complete() << std::endl;
 				}
 				
 				return true;
@@ -60,8 +65,6 @@ namespace Async
 			
 			bool Protocol::read_response(Response & response)
 			{
-				Readable readable(_descriptor, _reactor);
-				
 				auto parser = ResponseParser(response);
 				
 				return read_into_parser(parser);
