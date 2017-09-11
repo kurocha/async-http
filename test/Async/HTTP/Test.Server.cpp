@@ -21,9 +21,9 @@ namespace Async
 	namespace HTTP
 	{
 		UnitTest::Suite ServerTestSuite {
-			"Dream::HTTP::Server",
+			"Async::HTTP::Server",
 			
-			{"it should have some real tests",
+			{"it can request resource",
 				[](UnitTest::Examiner & examiner) {
 					Reactor reactor;
 					
@@ -53,7 +53,7 @@ namespace Async
 							Response response;
 							
 							examiner.expect(protocol.read_response(response)) == true;
-							examiner.expect(response.status) == 200;
+							examiner.expect(response.status) == 404;
 						}
 					});
 					
