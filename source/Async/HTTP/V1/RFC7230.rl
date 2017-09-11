@@ -23,7 +23,7 @@
 	
 	http_status = ([0-9]{3}) >mark %http_status;
 	http_target = http_vchar+ >mark %http_target;
-	http_reason = http_vchar+; # >mark %http_reason;
+	http_reason = print+ >mark %http_reason;
 	
 	http_header_name = http_token >mark %http_header_name;
 	http_header_value = (http_vchar | http_space)+ >mark %http_header_value;
@@ -42,10 +42,9 @@
 	# Reads a fixed number of bytes of content.
 	http_content_body := any >http_read_content %http_complete;
 	
+	http_empty_chunk = "0" http_crlf http_crlf %http_complete;
+	http_chunk = ([1-9a-fA-F] [0-9a-fA-F]*) >mark %http_chunk_size http_crlf any >http_read_content http_crlf;
+	
 	# Reads a chunked transfer encoding body.
-	http_chunked_body :=
-		(
-			([0-9a-fA-F]+) >mark %http_chunk_size http_crlf
-			any >http_read_content http_crlf
-		)+ %http_complete;
+	http_chunked_body := (http_empty_chunk | http_chunk)+;
 }%%

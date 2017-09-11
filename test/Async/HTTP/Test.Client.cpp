@@ -48,21 +48,26 @@ namespace Async
 						Response response;
 						
 						Console::info("Sending request", request.target);
-						if (client.send(request, response)) {
-							Console::info("Got response", response.status, response.body.size());
-							examiner.expect(response.status) == 200;
-							examiner.expect(response.headers["Content-Type"]) == "image/svg+xml";
-							examiner.check(!response.body.empty());
-							
-							for (const auto & header : response.headers) {
-								std::cerr << header.first << ": " << header.second << std::endl;
-							}
+						
+						examiner << "Sending request and waiting for response." << std::endl;
+						examiner.check(client.send(request, response));
+						
+						// Console::info("Got response", response.status, response.body.size());
+						// examiner.expect(response.status) == 200;
+						// examiner.expect(response.headers["Content-Type"]) == "image/svg+xml";
+						// 
+						// examiner << "Response body was not empty." << std::endl;
+						// examiner.check(!response.body.empty());
+						
+						for (const auto & header : response.headers) {
+							std::cerr << header.first << ": " << header.second << std::endl;
 						}
 					});
 					
 					task.resume();
 					
-					reactor.wait(5.0);
+					while (task)
+						reactor.update(1.0);
 				}
 			},
 		};

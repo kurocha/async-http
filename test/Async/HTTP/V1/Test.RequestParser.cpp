@@ -79,7 +79,7 @@ namespace Async
 						
 						Request request;
 						RequestParser request_parser(request);
-						request_parser.parse(std::begin(buffer), std::end(buffer));
+						request_parser.parse(std::begin(buffer), std::end(buffer)-1);
 						examiner.expect(request_parser.complete()) == true;
 						
 						examiner.expect(request.method) == "POST";
@@ -97,7 +97,7 @@ namespace Async
 						
 						Request request;
 						RequestParser request_parser(request);
-						request_parser.parse(std::begin(buffer), std::end(buffer));
+						request_parser.parse(std::begin(buffer), std::end(buffer)-1);
 						examiner.expect(request_parser.complete()) == true;
 						
 						examiner.expect(request.method) == "POST";

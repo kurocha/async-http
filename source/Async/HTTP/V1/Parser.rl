@@ -22,9 +22,7 @@
 	}
 
 	action http_reason {
-		// ignore
-		mark = nullptr;
-		_marked = false;
+		_object.reason = read_marked(mark, p);
 	}
 
 	action http_target {
@@ -85,9 +83,6 @@
 	action http_chunk_size {
 		auto hex_size = read_marked(mark, p);
 		_remaining_body_size = std::stoul(hex_size, nullptr, 16);
-		
-		// We have read a 0-length chunk so we can transit to the EOF state.
-		// if (_remaining_body_size == 0) eof = end;
 	}
 
 	action http_complete {
