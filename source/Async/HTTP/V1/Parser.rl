@@ -14,6 +14,19 @@
 		mark = p;
 		_marked = true;
 	}
+	
+	# Given that we've marked a position above, will ignore anything beyond this point.
+	action mark_ignore
+	{
+		_ignore = true;
+		_marked_length = p-mark + _split.size();
+	}
+	
+	# Reverse the decision stored by mark_ignore.
+	action mark_retain
+	{
+		_ignore = false;
+	}
 
 	action http_method {
 		_object.method = read_marked(mark, p);

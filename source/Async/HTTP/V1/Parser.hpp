@@ -66,6 +66,9 @@ namespace Async
 				// Whether we are buffering a string from the parser.
 				bool _marked = false;
 				
+				bool _ignore = false;
+				std::size_t _marked_length = 0;
+				
 				// The parser state.
 				int _cs;
 				
@@ -74,6 +77,10 @@ namespace Async
 					
 					_split.clear();
 					_marked = false;
+					
+					if (_ignore) {
+						string.resize(_marked_length);
+					}
 					
 					return string;
 				}
