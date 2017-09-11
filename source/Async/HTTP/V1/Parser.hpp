@@ -31,6 +31,26 @@ namespace Async
 				// Derivatives of this class should provide:
 				// const Byte * parse(const Byte * begin, const Byte * end);
 				
+				bool is_chunked_body() {
+					auto value = _object.headers.find("Transfer-Encoding");
+					
+					if (value == _object.headers.end()) {
+						return false;
+					} else {
+						return value->second == "chunked";
+					}
+				}
+				
+				std::size_t content_length() {
+					auto value = _object.headers.find("Content-Length");
+					
+					if (value == _object.headers.end()) {
+						return 0;
+					} else  {
+						return std::stoul(value->second, nullptr, 10);
+					}
+				}
+				
 			protected:
 				ObjectT & _object;
 				
@@ -56,26 +76,6 @@ namespace Async
 					_marked = false;
 					
 					return string;
-				}
-				
-				bool is_chunked_body() {
-					auto value = _object.headers.find("Transfer-Encoding");
-					
-					if (value == _object.headers.end()) {
-						return false;
-					} else {
-						return value->second == "chunked";
-					}
-				}
-				
-				std::size_t content_length() {
-					auto value = _object.headers.find("Content-Length");
-					
-					if (value == _object.headers.end()) {
-						return 0;
-					} else  {
-						return std::stoul(value->second, nullptr, 10);
-					}
 				}
 				
 				std::size_t _remaining_body_size = 0;

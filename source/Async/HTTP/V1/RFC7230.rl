@@ -26,8 +26,8 @@
 	http_reason = print+ >mark %http_reason;
 	
 	http_header_name = http_token >mark %http_header_name;
-	http_header_value = (http_vchar | http_space)+ >mark %http_header_value;
-	http_header = http_header_name ':' http_space* http_header_value http_crlf;
+	http_header_value = (http_vchar (http_space http_vchar)?)+ >mark %http_header_value;
+	http_header = http_header_name ':' http_space* http_header_value http_space* http_crlf;
 	
 	# The first line of the request.
 	http_request_line = http_method ' ' http_target ' ' http_version http_crlf;

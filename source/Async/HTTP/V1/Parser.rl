@@ -9,6 +9,8 @@
 	# Generic actions:
 	
 	action mark {
+		assert(!_marked);
+		
 		mark = p;
 		_marked = true;
 	}
