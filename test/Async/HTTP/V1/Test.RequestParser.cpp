@@ -123,7 +123,7 @@ namespace Async
 							examiner.expect(request.target) == "/foobar";
 							examiner.expect(request.version) == Version::HTTP_11;
 							
-							examiner << "Split at " << middle << std::endl;
+							examiner << "Split at " << (void*)middle << std::endl;
 							examiner.expect(request.body) == "0123456789";
 						});
 					}
