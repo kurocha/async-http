@@ -28,7 +28,7 @@
 	http_header_name = http_token >mark %http_header_name;
 	# Header values ignore preceeding and trailing space.. so we need to keep track of it.
 	http_header_value = http_vchar >mark (http_vchar+ >mark_retain | http_space+ >mark_ignore)** %http_header_value;
-	http_header = http_header_name ':' http_space* http_header_value http_crlf;
+	http_header = http_header_name ':' http_space* http_header_value? http_crlf;
 	
 	# The first line of the request.
 	http_request_line = http_method ' ' http_target ' ' http_version http_crlf;
