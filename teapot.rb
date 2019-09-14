@@ -62,7 +62,7 @@ end
 
 define_target "async-http-tests" do |target|
 	target.depends 'Library/UnitTest'
-	target.depends "Language/C++14", private: true
+	target.depends "Language/C++14"
 	
 	target.depends "Library/AsyncHTTP"
 	
