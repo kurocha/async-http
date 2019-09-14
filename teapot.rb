@@ -3,14 +3,14 @@
 #  This file is part of the "Teapot" project, and is released under the MIT license.
 #
 
-teapot_version "1.0"
+teapot_version "3.0"
 
 # Project Metadata
 
 define_project "async-http" do |project|
 	project.title = "Async HTTP"
 	
-	project.summary = 'A brief one line summary of the project.'
+	project.summary = 'Provides HTTP/1.x client and server implementations.'
 	
 	project.license = "MIT License"
 	
@@ -21,12 +21,31 @@ end
 
 # Build Targets
 
+define_target 'async-http-headers' do |target|
+	source_root = target.package.path + 'source'
+	
+	target.provides "Headers/AsyncHTTP" do
+		append header_search_paths source_root
+	end
+end
+
 define_target 'async-http-library' do |target|
-	target.build do
+	target.depends "Language/C++14"
+	
+	target.depends "Library/Async", public: true
+	target.depends "Library/AsyncNetwork", public: true
+	target.depends "Library/URI", public: true
+	
+	target.depends "Library/Memory", public: true
+	target.depends "Library/Logger", public: true
+	
+	target.depends "Convert/Ragel"
+	
+	target.depends "Headers/AsyncHTTP", public: true
+	
+	target.provides "Library/AsyncHTTP" do
 		source_root = target.package.path + 'source'
-		cache_prefix = environment[:build_prefix] / environment.checksum
-		
-		copy headers: source_root.glob('Async/**/*.hpp')
+		cache_prefix = environment[:build_prefix] + environment.checksum
 		
 		parsers = source_root.glob('Async/HTTP/**/*Parser.rl')
 		
@@ -35,52 +54,29 @@ define_target 'async-http-library' do |target|
 			convert source_file: file, destination_path: implementation_file
 		end
 		
-		build static_library: "AsyncHTTP", source_files: source_root.glob('Async/**/*.cpp') + implementation_files
-	end
-	
-	target.depends 'Build/Files'
-	target.depends 'Build/Clang'
-	
-	target.depends :platform
-	target.depends "Language/C++14", private: true
-	
-	target.depends "Build/Files"
-	target.depends "Build/Clang"
-	target.depends "Convert/Ragel", private: true
-	
-	target.depends "Library/Logger"
-	target.depends "Library/URI"
-	
-	target.depends "Library/Async"
-	target.depends "Library/AsyncNetwork"
-	
-	target.provides "Library/AsyncHTTP" do
-		append linkflags [
-			->{install_prefix + 'lib/libAsyncHTTP.a'},
-		]
+		library_path = build static_library: "AsyncHTTP", source_files: source_root.glob('Async/HTTP/**/*.cpp') + implementation_files
+		
+		append linkflags library_path
 	end
 end
 
 define_target "async-http-tests" do |target|
-	target.build do |*arguments|
-		test_root = target.package.path + 'test'
-		
-		run tests: "AsyncHTTP", source_files: test_root.glob('Async/**/*.cpp'), arguments: arguments
-	end
-	
-	target.depends :platform
+	target.depends 'Library/UnitTest'
 	target.depends "Language/C++14", private: true
 	
-	target.depends "Library/UnitTest"
 	target.depends "Library/AsyncHTTP"
-
-	target.provides "Test/AsyncHTTP"
+	
+	target.provides "Test/AsyncHTTP" do |*arguments|
+		test_root = target.package.path + 'test'
+		
+		run source_files: test_root.glob('Async/HTTP/**/*.cpp'), arguments: arguments
+	end
 end
 
 # Configurations
 
 define_configuration "development" do |configuration|
-	configuration[:source] = "https://github.com/kurocha/"
+	configuration[:source] = "http://github.com/kurocha/"
 	configuration.import "async-http"
 	
 	# Provides all the build related infrastructure:
@@ -91,23 +87,14 @@ define_configuration "development" do |configuration|
 	configuration.require "unit-test"
 	
 	# Provides some useful C++ generators:
+	configuration.require "generate-travis"
+	configuration.require "generate-project"
 	configuration.require "generate-cpp-class"
-	
-	configuration.require 'generate-project'
-	configuration.require 'generate-travis'
 end
 
 define_configuration "async-http" do |configuration|
 	configuration.public!
 	
-	configuration.require "memory"
-	configuration.require "time"
-	configuration.require "concurrent"
-	configuration.require "logger"
-	configuration.require "uri"
-	
-	configuration.require "async"
 	configuration.require "async-network"
-	
-	configuration.require "ragel"
+	configuration.require "logger"
 end

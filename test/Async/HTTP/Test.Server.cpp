@@ -16,6 +16,8 @@
 #include <Async/HTTP/Server.hpp>
 #include <Async/HTTP/V1/Protocol.hpp>
 
+#include <Logger/Console.hpp>
+
 namespace Async
 {
 	namespace HTTP
@@ -59,7 +61,9 @@ namespace Async
 					
 					client.resume();
 					
-					reactor.wait(1.0);
+					while (client) {
+						reactor.wait(1.0);
+					}
 				}
 			},
 		};

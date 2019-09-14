@@ -117,13 +117,13 @@ namespace Async
 							request_parser.parse(middle, end);
 							examiner.expect(request_parser.complete()) == true;
 							
-							examiner << "Transfer encoding is chunked." << std::endl;
+							// examiner << "Transfer encoding is chunked." << std::endl;
 							examiner.check(request_parser.is_chunked_body());
 							examiner.expect(request.method) == "POST";
 							examiner.expect(request.target) == "/foobar";
 							examiner.expect(request.version) == Version::HTTP_11;
 							
-							examiner << "Split at " << (void*)middle << std::endl;
+							// examiner << "Split at " << (void*)middle << std::endl;
 							examiner.expect(request.body) == "0123456789";
 						});
 					}
