@@ -19,8 +19,10 @@ namespace Async
 			switch (version) {
 				case Version::HTTP_10: return "HTTP/1.0";
 				case Version::HTTP_11: return "HTTP/1.1";
-				case Version::HTTP_20: return "HTTP/2.0";
+				case Version::HTTP_2: return "HTTP/2";
 			}
+			
+			return "";
 		}
 		
 		bool default_keep_alive(Version version)
@@ -28,8 +30,10 @@ namespace Async
 			switch (version) {
 				case Version::HTTP_10: return false;
 				case Version::HTTP_11:
-				case Version::HTTP_20: return true;
+				case Version::HTTP_2: return true;
 			}
+			
+			return true;
 		}
 		
 		bool chunked_transfer_encoding(Version version)
@@ -37,8 +41,10 @@ namespace Async
 			switch (version) {
 				case Version::HTTP_10: return false;
 				case Version::HTTP_11:
-				case Version::HTTP_20: return true;
+				case Version::HTTP_2: return true;
 			}
+			
+			return true;
 		}
 		
 		std::ostream & operator<<(std::ostream & out, Version version)

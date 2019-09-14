@@ -16,7 +16,7 @@ namespace Async
 	{
 		enum class Version
 		{
-			HTTP_10, HTTP_11, HTTP_20
+			HTTP_10, HTTP_11, HTTP_2
 		};
 		
 		const char * version_string(Version);
