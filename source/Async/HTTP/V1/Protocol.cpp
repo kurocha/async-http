@@ -34,7 +34,7 @@ namespace Async
 				Readable readable(_descriptor, _reactor);
 				
 				while (!parser.complete()) {
-					auto result = _buffer.read_from(_descriptor, readable);
+					_buffer.read_from(_descriptor, readable);
 					
 					if (_buffer.empty()) {
 						return false;
