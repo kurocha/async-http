@@ -32,7 +32,6 @@ end
 define_target 'async-http-library' do |target|
 	target.depends "Language/C++14"
 	
-	target.depends "Library/Async", public: true
 	target.depends "Library/AsyncNetwork", public: true
 	target.depends "Library/URI", public: true
 	
@@ -97,4 +96,6 @@ define_configuration "async-http" do |configuration|
 	
 	configuration.require "async-network"
 	configuration.require "logger"
+	configuration.require "memory"
+	configuration.require "ragel"
 end
