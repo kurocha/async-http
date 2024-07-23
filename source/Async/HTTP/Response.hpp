@@ -9,6 +9,7 @@
 #pragma once
 
 #include <string>
+#include <cstdint>
 
 #include "Headers.hpp"
 #include "Version.hpp"
